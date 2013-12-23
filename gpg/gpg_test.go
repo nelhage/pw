@@ -1,8 +1,8 @@
 package gpg
 
 import (
-	"bytes"
 	. "launchpad.net/gocheck"
+	"strings"
 	"testing"
 )
 
@@ -20,11 +20,11 @@ func (s *GPGSuite) TestPipe(c *C) {
 		"--no-use-agent",
 		"--armor",
 		"--passphrase",
-		"kumquat"}, []byte("Some test data"))
+		"kumquat"}, "Some test data")
 	c.Assert(err, IsNil)
-	c.Assert(bytes.HasPrefix(out, []byte("-----BEGIN PGP MESSAGE-----\n")),
+	c.Assert(strings.HasPrefix(out, "-----BEGIN PGP MESSAGE-----\n"),
 		Equals, true)
-	c.Assert(bytes.HasSuffix(out, []byte("\n-----END PGP MESSAGE-----\n")),
+	c.Assert(strings.HasSuffix(out, "\n-----END PGP MESSAGE-----\n"),
 		Equals, true)
 }
 
@@ -37,7 +37,7 @@ func (s *GPGSuite) TestError(c *C) {
 		"--passphrase",
 		"kumquat",
 		"--no-such-argument"},
-		[]byte("Some test data"))
+		"Some test data")
 	c.Assert(err, NotNil)
-	c.Assert(out, IsNil)
+	c.Assert(out, Equals, "")
 }

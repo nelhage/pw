@@ -1,15 +1,39 @@
 package main
 
 import (
+	"flag"
 	"github.com/nelhage/pw"
 	"log"
+	"os"
 )
 
-var config pw.Config = pw.Config{
-	GPGKey:  "C808 7020 87F6 8CD8 C818  F239 DFC1 CF0D A816 9ACF",
-	RootDir: "/home/nelhage/sec/pw",
+var config pw.Config = pw.LoadConfig()
+
+type command struct {
+	command string
+	action  func([]string) error
+}
+
+var commands []command = []command{
+	getCommand,
+	editCommand,
 }
 
 func main() {
-	log.Printf("GPG key: %s", config.GPGKey)
+	flag.Parse()
+	args := flag.Args()
+	if len(args) < 1 {
+		log.Fatalf("Usage: %s <COMMAND> [ARGS]\n", os.Args[0])
+	}
+
+	for _, cmd := range commands {
+		if args[0] == cmd.command {
+			if err := cmd.action(args[1:]); err != nil {
+				log.Fatalln(err.Error())
+			}
+			return
+		}
+	}
+
+	log.Fatalf("Unknown command: %s\n", args[0])
 }
