@@ -17,6 +17,9 @@ type command struct {
 var commands []command = []command{
 	getCommand,
 	editCommand,
+	rmCommand,
+	addCommand,
+	lsCommand,
 }
 
 func main() {
