@@ -37,7 +37,7 @@ func (config *Config) WritePassword(pw string, plaintext string) error {
 		plaintext = plaintext + "\n"
 	}
 
-	encrypted, err := gpg.GPGEncrypt([]string{config.GPGKey}, plaintext)
+	encrypted, err := gpg.GPGEncrypt(config.recipients(), plaintext)
 	if err != nil {
 		return err
 	}

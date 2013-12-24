@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-var config pw.Config = pw.LoadConfig()
+var config *pw.Config = pw.LoadConfig()
 
 type command struct {
 	command string

@@ -22,8 +22,10 @@ func runGPGPipe(args []string, in string) (string, error) {
 
 func GPGEncrypt(keys []string, in string) (string, error) {
 	args := []string{"--encrypt", "--armor"}
-	for _, keyid := range keys {
-		args = append(args, "-r", keyid)
+	if keys != nil {
+		for _, keyid := range keys {
+			args = append(args, "-r", keyid)
+		}
 	}
 	return runGPGPipe(args, in)
 }
