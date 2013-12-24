@@ -29,5 +29,5 @@ func GPGEncrypt(keys []string, in string) (string, error) {
 }
 
 func GPGDecrypt(in string) (string, error) {
-	return runGPGPipe([]string{"--decrypt"}, in)
+	return runGPGPipe([]string{"--decrypt", "--quiet"}, in)
 }

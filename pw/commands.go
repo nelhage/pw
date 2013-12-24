@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"os"
+	"strings"
 )
 
 var getCommand command = command{
@@ -122,13 +123,21 @@ var lsCommand command = command{
 }
 
 func doLsPasswords(args []string) error {
+	var filter func(string) bool
+	if len(args) == 0 {
+		filter = func(_ string) bool { return true }
+	} else {
+		filter = func(pw string) bool { return strings.Contains(pw, args[0]) }
+	}
 	passwords, err := config.ListPasswords()
 	if err != nil {
 		return err
 	}
 
 	for _, pass := range passwords {
-		fmt.Printf("%s\n", pass)
+		if filter(pass) {
+			fmt.Printf("%s\n", pass)
+		}
 	}
 
 	return nil
