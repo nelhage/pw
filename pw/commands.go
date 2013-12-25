@@ -98,16 +98,30 @@ var addCommand command = command{
 }
 
 func doAddPassword(args []string) error {
-	if len(args) != 1 {
-		return fmt.Errorf("Usage: %s add PASSWORD", os.Args[0])
+	if len(args) < 1 {
+		return fmt.Errorf("Usage: %s add PASSWORD [FILE]", os.Args[0])
 	}
 
-	fmt.Printf("Contents for password `%s': ", args[0])
-	plaintext, err := terminal.ReadPassword(0)
-	if err != nil {
-		return err
+	var plaintext []byte
+	var err error
+
+	if len(args) == 1 {
+		fmt.Printf("Contents for password `%s': ", args[0])
+		plaintext, err = terminal.ReadPassword(0)
+		if err != nil {
+			return err
+		}
+		fmt.Println()
+	} else {
+		f, err := os.Open(args[1])
+		if err != nil {
+			return err
+		}
+		defer f.Close()
+		if plaintext, err = ioutil.ReadAll(f); err != nil {
+			return err
+		}
 	}
-	fmt.Println()
 
 	if err = config.WritePassword(args[0], string(plaintext)); err != nil {
 		return err
