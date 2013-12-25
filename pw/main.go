@@ -2,9 +2,11 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"github.com/nelhage/pw"
 	"log"
 	"os"
+	"strings"
 )
 
 var config *pw.Config = pw.LoadConfig()
@@ -22,11 +24,26 @@ var commands []command = []command{
 	lsCommand,
 }
 
+func knownCommands() []string {
+	var out []string
+	for _, cmd := range commands {
+		out = append(out, cmd.command)
+	}
+	return out
+}
+
 func main() {
+	flag.Usage = func() {
+		fmt.Printf("Usage: %s [options] COMMAND [ARGS]\n", os.Args[0])
+		fmt.Printf(" Known commands: %s\n", strings.Join(knownCommands(), ", "))
+		flag.PrintDefaults()
+	}
+
 	flag.Parse()
 	args := flag.Args()
 	if len(args) < 1 {
-		log.Fatalf("Usage: %s <COMMAND> [ARGS]\n", os.Args[0])
+		flag.Usage()
+		os.Exit(1)
 	}
 
 	for _, cmd := range commands {
@@ -38,5 +55,7 @@ func main() {
 		}
 	}
 
-	log.Fatalf("Unknown command: %s\n", args[0])
+	log.Printf("Unknown command: %s\n", args[0])
+	flag.Usage()
+	os.Exit(1)
 }
