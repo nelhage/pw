@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/nelhage/pw"
+	"github.com/nelhage/pw/pw"
 	"log"
 	"os"
 	"strings"
