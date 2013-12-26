@@ -164,7 +164,7 @@ var copyCommand command = command{
 
 func doCopyPassword(args []string) error {
 	if len(args) != 1 {
-		return fmt.Errorf("Usage: %s copy [PASSWORD]", os.Args[0])
+		return fmt.Errorf("Usage: %s copy PASSWORD", os.Args[0])
 	}
 
 	plaintext, err := config.ReadPassword(args[0])
@@ -181,5 +181,33 @@ func doCopyPassword(args []string) error {
 	}
 
 	log.Printf("Copied password `%s' to clipboard.\n", args[0])
+	return nil
+}
+
+var newCommand command = command{
+	command: "new",
+	action:  doNewPassword,
+}
+
+func doNewPassword(args []string) error {
+	if len(args) != 1 {
+		return fmt.Errorf("Usage: %s new PASSWORD", os.Args[0])
+	}
+
+	password, err := config.GeneratePassword()
+
+	if err != nil {
+		return err
+	}
+
+	if err := config.WritePassword(args[0], password); err != nil {
+		return err
+	}
+
+	if err := config.CopyText(password); err != nil {
+		return err
+	}
+
+	log.Printf("Generated password `%s' and copied to the clipboard.\n", args[0])
 	return nil
 }

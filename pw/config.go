@@ -8,9 +8,10 @@ import (
 )
 
 type Config struct {
-	GPGKey      string
-	RootDir     string
-	CopyCommand string
+	GPGKey          string
+	RootDir         string
+	CopyCommand     string
+	GenerateCommand string
 }
 
 var theConfig Config
@@ -22,6 +23,8 @@ func init() {
 		"The root directory for the password store")
 	flag.StringVar(&theConfig.CopyCommand, "cmd.copy", "xclip -i",
 		"A command that accepts input on STDIN and copies it to the clipboard")
+	flag.StringVar(&theConfig.GenerateCommand, "cmd.generate", "pwgen 12 1 -s",
+		"A command to generate new passwords")
 }
 
 func LoadConfig() *Config {

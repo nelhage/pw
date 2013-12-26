@@ -1,6 +1,7 @@
 package pw
 
 import (
+	"bytes"
 	"os"
 	"os/exec"
 	"strings"
@@ -27,4 +28,18 @@ func (config *Config) CopyText(text string) error {
 	cmd.Stderr = os.Stderr
 	cmd.Stdin = strings.NewReader(text)
 	return cmd.Run()
+}
+
+func (config *Config) GeneratePassword() (string, error) {
+	var buffer bytes.Buffer
+	cmd := exec.Command("sh", "-c", config.GenerateCommand)
+	cmd.Stdout = &buffer
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = os.Stdin
+
+	if err := cmd.Run(); err != nil {
+		return "", err
+	}
+
+	return strings.TrimRight(buffer.String(), "\n"), nil
 }

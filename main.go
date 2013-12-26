@@ -23,6 +23,7 @@ var commands []command = []command{
 	addCommand,
 	lsCommand,
 	copyCommand,
+	newCommand,
 }
 
 func knownCommands() []string {
