@@ -11,6 +11,14 @@ import (
 	"strings"
 )
 
+type NoSuchPassword struct {
+	password string
+}
+
+func (nsp NoSuchPassword) Error() string {
+	return fmt.Sprintf("no such password `%s'", nsp.password)
+}
+
 func (config *Config) ResolvePath(pw string) string {
 	return path.Join(config.RootDir, pw) + ".gpg"
 }
@@ -20,6 +28,11 @@ func (config *Config) ReadPassword(pw string) (string, error) {
 
 	f, err := os.Open(fullPath)
 	if err != nil {
+		if os.IsNotExist(err) {
+			return "", NoSuchPassword{
+				password: pw,
+			}
+		}
 		return "", err
 	}
 	defer f.Close()
@@ -64,7 +77,9 @@ func (config *Config) RemovePassword(pw string) error {
 	if err := os.Remove(fullPath); err != nil {
 		p := err.(*os.PathError)
 		if os.IsNotExist(p.Err) {
-			return fmt.Errorf("No such password: %s", err)
+			return NoSuchPassword{
+				password: pw,
+			}
 		}
 		return err
 	}
