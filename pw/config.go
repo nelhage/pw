@@ -8,15 +8,20 @@ import (
 )
 
 type Config struct {
-	GPGKey  string
-	RootDir string
+	GPGKey      string
+	RootDir     string
+	CopyCommand string
 }
 
 var theConfig Config
 
 func init() {
-	flag.StringVar(&theConfig.GPGKey, "gpgkey", "", "The GPG key to encrypt passwords to")
-	flag.StringVar(&theConfig.RootDir, "root", os.ExpandEnv("${HOME}/pw"), "The root directory for the password store")
+	flag.StringVar(&theConfig.GPGKey, "gpgkey", "",
+		"The GPG key to encrypt passwords to")
+	flag.StringVar(&theConfig.RootDir, "root", os.ExpandEnv("${HOME}/pw"),
+		"The root directory for the password store")
+	flag.StringVar(&theConfig.CopyCommand, "cmd.copy", "xclip -i",
+		"A command that accepts input on STDIN and copies it to the clipboard")
 }
 
 func LoadConfig() *Config {

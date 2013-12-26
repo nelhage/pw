@@ -20,3 +20,11 @@ func (config *Config) RunEditor(path string) error {
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
 }
+
+func (config *Config) CopyText(text string) error {
+	cmd := exec.Command("sh", "-c", config.CopyCommand)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
+	cmd.Stdin = strings.NewReader(text)
+	return cmd.Run()
+}

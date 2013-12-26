@@ -156,3 +156,30 @@ func doLsPasswords(args []string) error {
 
 	return nil
 }
+
+var copyCommand command = command{
+	command: "copy",
+	action:  doCopyPassword,
+}
+
+func doCopyPassword(args []string) error {
+	if len(args) != 1 {
+		return fmt.Errorf("Usage: %s copy [PASSWORD]", os.Args[0])
+	}
+
+	plaintext, err := config.ReadPassword(args[0])
+	if err != nil {
+		return err
+	}
+
+	if strings.Count(plaintext, "\n") == 1 {
+		plaintext = strings.TrimSuffix(plaintext, "\n")
+	}
+
+	if err = config.CopyText(plaintext); err != nil {
+		return err
+	}
+
+	log.Printf("Copied password `%s' to clipboard.\n", args[0])
+	return nil
+}
