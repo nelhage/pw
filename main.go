@@ -14,6 +14,8 @@ var config *pw.Config = pw.LoadConfig()
 type command struct {
 	command string
 	action  func([]string) error
+	usage   string
+	minArgs int
 }
 
 var commands []command = []command{
@@ -34,6 +36,23 @@ func knownCommands() []string {
 	return out
 }
 
+func runCommand(cmd *command, args []string) error {
+	if len(args) < cmd.minArgs {
+		var pad string
+		if cmd.usage == "" {
+			pad = ""
+		} else {
+			pad = " "
+		}
+		return fmt.Errorf("Usage: %s %s%s%s",
+			os.Args[0],
+			cmd.command,
+			pad,
+			cmd.usage)
+	}
+	return cmd.action(args)
+}
+
 func main() {
 	flag.Usage = func() {
 		fmt.Printf("Usage: %s [options] COMMAND [ARGS]\n", os.Args[0])
@@ -50,7 +69,7 @@ func main() {
 
 	for _, cmd := range commands {
 		if args[0] == cmd.command {
-			if err := cmd.action(args[1:]); err != nil {
+			if err := runCommand(&cmd, args[1:]); err != nil {
 				log.Fatalln(err.Error())
 			}
 			return

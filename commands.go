@@ -13,12 +13,11 @@ import (
 var getCommand command = command{
 	command: "get",
 	action:  doGetPassword,
+	usage:   "PASSWORD",
+	minArgs: 1,
 }
 
 func doGetPassword(args []string) error {
-	if len(args) != 1 {
-		return fmt.Errorf("Usage: %s get [PASSWORD]", os.Args[0])
-	}
 	decrypted, err := config.ReadPassword(args[0])
 	if err != nil {
 		return fmt.Errorf("Unable to read password: %s\n", err.Error())
@@ -31,13 +30,11 @@ func doGetPassword(args []string) error {
 var editCommand command = command{
 	command: "edit",
 	action:  doEditPassword,
+	minArgs: 1,
+	usage:   "PASSWORD",
 }
 
 func doEditPassword(args []string) error {
-	if len(args) != 1 {
-		return fmt.Errorf("Usage: %s edit [PASSWORD]", os.Args[0])
-	}
-
 	decrypted, err := config.ReadPassword(args[0])
 	if err != nil && !os.IsNotExist(err) {
 		return fmt.Errorf("Reading password: %s\n", err)
@@ -77,13 +74,11 @@ func doEditPassword(args []string) error {
 var rmCommand command = command{
 	command: "rm",
 	action:  doRmPassword,
+	minArgs: 1,
+	usage:   "PASSWORD",
 }
 
 func doRmPassword(args []string) error {
-	if len(args) != 1 {
-		return fmt.Errorf("Usage: %s rm PASSWORD", os.Args[0])
-	}
-
 	if err := config.RemovePassword(args[0]); err != nil {
 		return err
 	}
@@ -95,13 +90,11 @@ func doRmPassword(args []string) error {
 var addCommand command = command{
 	command: "add",
 	action:  doAddPassword,
+	minArgs: 1,
+	usage:   "PASSWORD [FILE]",
 }
 
 func doAddPassword(args []string) error {
-	if len(args) < 1 {
-		return fmt.Errorf("Usage: %s add PASSWORD [FILE]", os.Args[0])
-	}
-
 	var plaintext []byte
 	var err error
 
@@ -134,6 +127,7 @@ func doAddPassword(args []string) error {
 var lsCommand command = command{
 	command: "ls",
 	action:  doLsPasswords,
+	usage:   "[NEEDLE]",
 }
 
 func doLsPasswords(args []string) error {
@@ -160,13 +154,11 @@ func doLsPasswords(args []string) error {
 var copyCommand command = command{
 	command: "copy",
 	action:  doCopyPassword,
+	minArgs: 1,
+	usage:   "PASSWORD",
 }
 
 func doCopyPassword(args []string) error {
-	if len(args) != 1 {
-		return fmt.Errorf("Usage: %s copy PASSWORD", os.Args[0])
-	}
-
 	plaintext, err := config.ReadPassword(args[0])
 	if err != nil {
 		return err
@@ -187,13 +179,11 @@ func doCopyPassword(args []string) error {
 var newCommand command = command{
 	command: "new",
 	action:  doNewPassword,
+	minArgs: 1,
+	usage:   "PASSWORD",
 }
 
 func doNewPassword(args []string) error {
-	if len(args) != 1 {
-		return fmt.Errorf("Usage: %s new PASSWORD", os.Args[0])
-	}
-
 	password, err := config.GeneratePassword()
 
 	if err != nil {
