@@ -3,6 +3,7 @@ package main
 import (
 	"code.google.com/p/go.crypto/ssh/terminal"
 	"fmt"
+	"github.com/nelhage/pw/pw"
 	"io"
 	"io/ioutil"
 	"log"
@@ -36,8 +37,12 @@ var editCommand command = command{
 
 func doEditPassword(args []string) error {
 	decrypted, err := config.ReadPassword(args[0])
-	if err != nil && !os.IsNotExist(err) {
-		return fmt.Errorf("Reading password: %s\n", err)
+	if err != nil {
+		if _, ok := err.(*pw.NoSuchPassword); !ok {
+			decrypted = ""
+		} else {
+			return err
+		}
 	}
 
 	f, err := ioutil.TempFile("", "pw-")
