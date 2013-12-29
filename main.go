@@ -9,7 +9,7 @@ import (
 	"strings"
 )
 
-var config *pw.Config = pw.LoadConfig()
+var config *pw.Config
 
 type command struct {
 	command string
@@ -59,6 +59,9 @@ func main() {
 		fmt.Printf(" Known commands: %s\n", strings.Join(knownCommands(), ", "))
 		flag.PrintDefaults()
 	}
+	config = pw.LoadConfig()
+
+	maybeComplete()
 
 	flag.Parse()
 	args := flag.Args()
