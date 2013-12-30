@@ -103,7 +103,7 @@ func doAddPassword(args []string) error {
 	var plaintext []byte
 	var err error
 
-	if len(args) == 1 {
+	if len(args) == 1 && terminal.IsTerminal(0) {
 		fmt.Printf("Contents for password `%s': ", args[0])
 		plaintext, err = terminal.ReadPassword(0)
 		if err != nil {
@@ -111,11 +111,17 @@ func doAddPassword(args []string) error {
 		}
 		fmt.Println()
 	} else {
-		f, err := os.Open(args[1])
-		if err != nil {
-			return err
+		var f io.Reader
+		if len(args) > 1 {
+			file, err := os.Open(args[1])
+			if err != nil {
+				return err
+			}
+			defer file.Close()
+			f = file
+		} else {
+			f = os.Stdin
 		}
-		defer f.Close()
 		if plaintext, err = ioutil.ReadAll(f); err != nil {
 			return err
 		}
