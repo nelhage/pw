@@ -40,3 +40,13 @@ configuration options are:
   be invoked with the text to copy on STDIN.
 - `cmd.generate` -- A command that should return a freshly-generated
   password when invoked. Defaults to `pwgen 12 1 -s`.
+
+## Tab-completion
+
+To enable tab-completion for `pw`, simply add the following line to
+your `.bashrc`:
+
+    complete -C 'pw -do-completion' pw
+
+Completion support is currently only implemented/tested for
+bash. Patches or bug reports in other shells are welcome.
