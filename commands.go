@@ -6,7 +6,6 @@ import (
 	"github.com/nelhage/pw/pw"
 	"io"
 	"io/ioutil"
-	"log"
 	"os"
 	"strings"
 )
@@ -23,7 +22,7 @@ func doGetPassword(args []string) error {
 	if err != nil {
 		return fmt.Errorf("Unable to read password: %s\n", err.Error())
 	}
-	log.Printf("Contents of `%s':\n", args[0])
+	fmt.Fprintf(os.Stderr, "Contents of `%s':\n", args[0])
 	fmt.Printf("%s", decrypted)
 	return nil
 }
@@ -88,7 +87,7 @@ func doRmPassword(args []string) error {
 		return err
 	}
 
-	log.Printf("Removed password `%s'\n", args[0])
+	fmt.Printf("Removed password `%s'\n", args[0])
 	return nil
 }
 
@@ -131,7 +130,7 @@ func doAddPassword(args []string) error {
 		return err
 	}
 
-	log.Printf("Saved password `%s'\n", args[0])
+	fmt.Printf("Saved password `%s'\n", args[0])
 	return nil
 }
 
@@ -183,7 +182,7 @@ func doCopyPassword(args []string) error {
 		return err
 	}
 
-	log.Printf("Copied password `%s' to clipboard.\n", args[0])
+	fmt.Printf("Copied password `%s' to clipboard.\n", args[0])
 	return nil
 }
 
@@ -209,6 +208,6 @@ func doNewPassword(args []string) error {
 		return err
 	}
 
-	log.Printf("Generated password `%s' and copied to the clipboard.\n", args[0])
+	fmt.Printf("Generated password `%s' and copied to the clipboard.\n", args[0])
 	return nil
 }
