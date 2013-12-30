@@ -37,7 +37,8 @@ configuration options are:
   form understood by `gpg -r`, but a full key fingerprint is suggested
   for maximum explicitness.
 - `cmd.copy` -- A command to use for copying text. This command will
-  be invoked with the text to copy on STDIN.
+  be invoked with the text to copy on STDIN. Defaults to `xclip -i` on
+  Linux and `pbcopy` on OS X.
 - `cmd.generate` -- A command that should return a freshly-generated
   password when invoked. Defaults to `pwgen 12 1 -s`.
 
