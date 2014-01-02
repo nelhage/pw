@@ -50,30 +50,30 @@ func (s *FlagCompletionSuite) SetUpSuite(c *C) {
 }
 
 func (s *FlagCompletionSuite) TestCompleteFlags(c *C) {
+	allFlags := []string{"-bool", "-int", "-str", "-str1"}
 	testCases := []struct {
 		commandLine []string
 		completions []string
 		skip        int
 	}{
-		{[]string{"-"}, []string{"-bool", "-int", "-str", "-str1"}, 0},
-		{[]string{""}, nil, 0},
-		{[]string{"-bool", ""}, nil, 1},
-		{[]string{"-int", "7", ""}, nil, 2},
-		{[]string{"-bool", "-str", ""}, []string{}, 0},
-		{[]string{"-bool", "-str"}, []string{"-str", "-str1"}, 0},
-		{[]string{"-str", "hello", "--int"}, []string{"-int"}, 0},
+		{[]string{"-"}, allFlags, -1},
+		{[]string{""}, allFlags, 0},
+		{[]string{"-bool", ""}, allFlags, 1},
+		{[]string{"-int", "7", ""}, allFlags, 2},
+		{[]string{"-bool", "-str", ""}, []string{}, -1},
+		{[]string{"-bool", "-str"}, []string{"-str", "-str1"}, -1},
+		{[]string{"-str", "hello", "--int"}, []string{"-int"}, -1},
 		{[]string{"-str", "hello", "--int", "42", "", "world"}, nil, 4},
 		{[]string{"-str", "hello", "--int", "42", "--", "-str"}, nil, 5},
-		{[]string{"-wtf", "-value", ""}, nil, 2},
+		{[]string{"-wtf", "-value", ""}, allFlags, 2},
 	}
 	for _, tc := range testCases {
 		var cl CommandLine = append(CommandLine{"cmd"}, tc.commandLine...)
 		completions, rest := completeFlags(cl, &s.flags)
-		if tc.completions != nil {
-			c.Check(completions, DeepEquals, tc.completions)
+		c.Check(completions, DeepEquals, tc.completions)
+		if tc.skip < 0 {
 			c.Check(rest, IsNil)
 		} else {
-			c.Check(completions, IsNil)
 			c.Check(rest, DeepEquals, cl[tc.skip+1:])
 		}
 	}

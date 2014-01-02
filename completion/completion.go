@@ -138,17 +138,22 @@ func completeFlags(cl CommandLine, flags *flag.FlagSet) (completions []string, r
 		})
 		return completions, nil
 	}
-	return nil, cl
+
+	if cl[0] == "" {
+		flags.VisitAll(func(f *flag.Flag) {
+			completions = append(completions, "-"+f.Name)
+		})
+	}
+	return completions, cl
 }
 
 func getCompletions(cl CommandLine, flags *flag.FlagSet, completer Completer) []string {
 	completions, rest := completeFlags(cl, flags)
-	if completions != nil {
-		return completions
+	if rest != nil {
+		if extra, ok := completer(rest); ok {
+			completions = append(completions, extra...)
+		}
 	}
 
-	if completions, ok := completer(rest); ok {
-		return completions
-	}
-	return nil
+	return completions
 }
