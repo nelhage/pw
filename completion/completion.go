@@ -89,6 +89,11 @@ func parseLineForCompletion(line string, point int) CommandLine {
 	return append(cl, string(word))
 }
 
+type boolFlag interface {
+	flag.Value
+	IsBoolFlag() bool
+}
+
 func completeFlags(cl CommandLine, flags *flag.FlagSet) (completions []string, rest CommandLine) {
 	if len(cl) == 0 {
 		return nil, cl
@@ -105,6 +110,11 @@ func completeFlags(cl CommandLine, flags *flag.FlagSet) (completions []string, r
 				for i = 0; i < len(w) && w[i] == '-'; i++ {
 				}
 				inFlag = w[i:]
+			}
+			if flag := flags.Lookup(inFlag); flag != nil {
+				if bf, ok := flag.Value.(boolFlag); ok && bf.IsBoolFlag() {
+					inFlag = ""
+				}
 			}
 		} else {
 			if w == "--" {
