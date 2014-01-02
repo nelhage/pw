@@ -1,16 +1,17 @@
-package main
+package completion
 
 import (
 	"fmt"
 	"log"
 	"os"
 	"strconv"
-	"strings"
 )
 
 var completionLog = log.New(os.Stderr, "completion: ", log.LstdFlags)
 
-func maybeComplete() {
+type Completer func(CompletionState) []string
+
+func CompleteIfRequested(completer Completer) {
 	if len(os.Args) <= 1 || os.Args[1] != "-do-completion" {
 		return
 	}
@@ -28,7 +29,7 @@ func maybeComplete() {
 		os.Exit(1)
 	}
 
-	options, err := doCompletion(line, int(point))
+	options, err := doCompletion(line, int(point), completer)
 	if err != nil {
 		completionLog.Println("Error in completion: ", err.Error())
 		os.Exit(1)
@@ -39,26 +40,25 @@ func maybeComplete() {
 	os.Exit(0)
 }
 
-type completionState struct {
-	line  string
-	point int
-	words []string
-	word  int
+type CompletionState struct {
+	Line  string
+	Point int
+	Words []string
 }
 
-func parseLineForCompletion(line string, point int) completionState {
-	state := completionState{
-		line:  line,
-		point: point,
+func (c CompletionState) CurrentWord() string {
+	return c.Words[len(c.Words)-1]
+}
+
+func parseLineForCompletion(line string, point int) CompletionState {
+	state := CompletionState{
+		Line:  line,
+		Point: point,
 	}
 	var quote rune = 0
 	var backslash bool = false
 	var word []rune
-	for byte, char := range line {
-		if state.word == 0 && point <= byte {
-			state.word = len(state.words)
-		}
-
+	for _, char := range line[:point] {
 		if backslash {
 			word = append(word, char)
 			backslash = false
@@ -78,7 +78,7 @@ func parseLineForCompletion(line string, point int) completionState {
 				quote = char
 			case ' ', '\t':
 				if word != nil {
-					state.words = append(state.words, string(word))
+					state.Words = append(state.Words, string(word))
 				}
 				word = nil
 			default:
@@ -97,40 +97,12 @@ func parseLineForCompletion(line string, point int) completionState {
 		}
 	}
 
-	state.words = append(state.words, string(word))
-
-	if point >= len(line) {
-		state.word = len(state.words) - 1
-	}
+	state.Words = append(state.Words, string(word))
 
 	return state
 }
 
-func doCompletion(line string, point int) ([]string, error) {
+func doCompletion(line string, point int, completer Completer) ([]string, error) {
 	state := parseLineForCompletion(line, point)
-	return complete(state), nil
-}
-
-func complete(state completionState) []string {
-	var completions []string
-	if state.word == 0 {
-		return nil
-	} else if state.word == 1 {
-		for _, cmd := range commands {
-			if strings.HasPrefix(cmd.command, state.words[state.word]) {
-				completions = append(completions, cmd.command)
-			}
-		}
-	} else if state.word == 2 {
-		passwords, err := config.ListPasswords()
-		if err != nil {
-			return nil
-		}
-		for _, pw := range passwords {
-			if strings.HasPrefix(pw, state.words[state.word]) {
-				completions = append(completions, pw)
-			}
-		}
-	}
-	return completions
+	return completer(state), nil
 }

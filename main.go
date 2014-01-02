@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"github.com/nelhage/pw/completion"
 	"github.com/nelhage/pw/pw"
 	"log"
 	"os"
@@ -53,6 +54,29 @@ func runCommand(cmd *command, args []string) error {
 	return cmd.action(args)
 }
 
+func complete(state completion.CompletionState) []string {
+	var completions []string
+	switch len(state.Words) {
+	case 2:
+		for _, cmd := range commands {
+			if strings.HasPrefix(cmd.command, state.CurrentWord()) {
+				completions = append(completions, cmd.command)
+			}
+		}
+	case 3:
+		passwords, err := config.ListPasswords()
+		if err != nil {
+			return nil
+		}
+		for _, pw := range passwords {
+			if strings.HasPrefix(pw, state.CurrentWord()) {
+				completions = append(completions, pw)
+			}
+		}
+	}
+	return completions
+}
+
 func main() {
 	flag.Usage = func() {
 		fmt.Printf("Usage: %s [options] COMMAND [ARGS]\n", os.Args[0])
@@ -61,7 +85,7 @@ func main() {
 	}
 	config = pw.LoadConfig()
 
-	maybeComplete()
+	completion.CompleteIfRequested(complete)
 
 	flag.Parse()
 	args := flag.Args()
