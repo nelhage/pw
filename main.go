@@ -54,7 +54,9 @@ func runCommand(cmd *command, args []string) error {
 	return cmd.action(args)
 }
 
-func complete(cl completion.CommandLine) (completions []string, ok bool) {
+type completer struct{}
+
+func (_ completer) Complete(cl completion.CommandLine) (completions []string) {
 	switch len(cl) {
 	case 1:
 		for _, cmd := range commands {
@@ -62,20 +64,18 @@ func complete(cl completion.CommandLine) (completions []string, ok bool) {
 				completions = append(completions, cmd.command)
 			}
 		}
-		ok = true
 	case 2:
 		passwords, err := config.ListPasswords()
 		if err != nil {
-			return nil, false
+			return nil
 		}
 		for _, pw := range passwords {
 			if strings.HasPrefix(pw, cl.CurrentWord()) {
 				completions = append(completions, pw)
 			}
 		}
-		ok = true
 	}
-	return completions, ok
+	return completions
 }
 
 func main() {
@@ -86,7 +86,7 @@ func main() {
 	}
 	config = pw.LoadConfig()
 
-	completion.CompleteIfRequested(flag.CommandLine, complete)
+	completion.CompleteIfRequested(completion.CompleterWithFlags(flag.CommandLine, completer{}))
 
 	flag.Parse()
 	args := flag.Args()

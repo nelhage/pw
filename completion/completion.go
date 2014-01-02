@@ -12,9 +12,11 @@ import (
 var completionLog = log.New(os.Stderr, "completion: ", log.LstdFlags)
 
 type CommandLine []string
-type Completer func(CommandLine) ([]string, bool)
+type Completer interface {
+	Complete(CommandLine) []string
+}
 
-func CompleteIfRequested(flags *flag.FlagSet, completer Completer) {
+func CompleteIfRequested(completer Completer) {
 	if len(os.Args) <= 1 || os.Args[1] != "-do-completion" {
 		return
 	}
@@ -33,7 +35,7 @@ func CompleteIfRequested(flags *flag.FlagSet, completer Completer) {
 
 	cl := parseLineForCompletion(line, int(point))
 
-	for _, word := range getCompletions(cl, flags, completer) {
+	for _, word := range completer.Complete(cl) {
 		fmt.Println(word)
 	}
 	os.Exit(0)
@@ -147,10 +149,22 @@ func completeFlags(cl CommandLine, flags *flag.FlagSet) (completions []string, r
 	return completions, cl
 }
 
-func getCompletions(cl CommandLine, flags *flag.FlagSet, completer Completer) []string {
-	completions, rest := completeFlags(cl, flags)
+type flagCompleter struct {
+	flags *flag.FlagSet
+	inner Completer
+}
+
+func CompleterWithFlags(flags *flag.FlagSet, completer Completer) Completer {
+	return &flagCompleter{
+		flags: flags,
+		inner: completer,
+	}
+}
+
+func (c *flagCompleter) Complete(cl CommandLine) []string {
+	completions, rest := completeFlags(cl, c.flags)
 	if rest != nil {
-		if extra, ok := completer(rest); ok {
+		if extra := c.inner.Complete(rest); extra != nil {
 			completions = append(completions, extra...)
 		}
 	}
