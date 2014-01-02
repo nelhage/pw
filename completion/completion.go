@@ -15,6 +15,11 @@ type CommandLine []string
 type Completer interface {
 	Complete(CommandLine) []string
 }
+type FunctionCompleter func(CommandLine) []string
+
+func (f FunctionCompleter) Complete(cl CommandLine) []string {
+	return f(cl)
+}
 
 func CompleteIfRequested(completer Completer) {
 	if len(os.Args) <= 1 || os.Args[1] != "-do-completion" {

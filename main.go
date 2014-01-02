@@ -54,9 +54,7 @@ func runCommand(cmd *command, args []string) error {
 	return cmd.action(args)
 }
 
-type completer struct{}
-
-func (_ completer) Complete(cl completion.CommandLine) (completions []string) {
+func complete(cl completion.CommandLine) (completions []string) {
 	switch len(cl) {
 	case 1:
 		for _, cmd := range commands {
@@ -86,7 +84,9 @@ func main() {
 	}
 	config = pw.LoadConfig()
 
-	completion.CompleteIfRequested(completion.CompleterWithFlags(flag.CommandLine, completer{}))
+	completion.CompleteIfRequested(
+		completion.CompleterWithFlags(flag.CommandLine,
+			completion.FunctionCompleter(complete)))
 
 	flag.Parse()
 	args := flag.Args()
