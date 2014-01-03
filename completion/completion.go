@@ -21,6 +21,10 @@ func (f FunctionCompleter) Complete(cl CommandLine) []string {
 	return f(cl)
 }
 
+func (c CommandLine) CurrentWord() string {
+	return c[len(c)-1]
+}
+
 func CompleteIfRequested(completer Completer) {
 	if len(os.Args) <= 1 || os.Args[1] != "-do-completion" {
 		return
@@ -44,9 +48,6 @@ func CompleteIfRequested(completer Completer) {
 		fmt.Println(word)
 	}
 	os.Exit(0)
-}
-func (c CommandLine) CurrentWord() string {
-	return c[len(c)-1]
 }
 
 func parseLineForCompletion(line string, point int) CommandLine {
@@ -175,4 +176,19 @@ func (c *flagCompleter) Complete(cl CommandLine) []string {
 	}
 
 	return completions
+}
+
+type setCompleter []string
+
+func (c setCompleter) Complete(cl CommandLine) (completions []string) {
+	for _, str := range c {
+		if strings.HasPrefix(str, cl.CurrentWord()) {
+			completions = append(completions, str)
+		}
+	}
+	return completions
+}
+
+func SetCompleter(strs []string) Completer {
+	return setCompleter(strs)
 }

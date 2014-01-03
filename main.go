@@ -57,21 +57,13 @@ func runCommand(cmd *command, args []string) error {
 func complete(cl completion.CommandLine) (completions []string) {
 	switch len(cl) {
 	case 1:
-		for _, cmd := range commands {
-			if strings.HasPrefix(cmd.command, cl.CurrentWord()) {
-				completions = append(completions, cmd.command)
-			}
-		}
+		return completion.SetCompleter(knownCommands()).Complete(cl)
 	case 2:
 		passwords, err := config.ListPasswords()
 		if err != nil {
 			return nil
 		}
-		for _, pw := range passwords {
-			if strings.HasPrefix(pw, cl.CurrentWord()) {
-				completions = append(completions, pw)
-			}
-		}
+		return completion.SetCompleter(passwords).Complete(cl)
 	}
 	return completions
 }
