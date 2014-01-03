@@ -3,7 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/nelhage/pw/completion"
+	"github.com/nelhage/go.cli/completion"
 	"github.com/nelhage/pw/pw"
 	"log"
 	"os"
