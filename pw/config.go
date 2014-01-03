@@ -3,7 +3,7 @@ package pw
 import (
 	"flag"
 	"fmt"
-	"github.com/nelhage/go.config"
+	"github.com/nelhage/go.cli/config"
 	"os"
 	"runtime"
 )
