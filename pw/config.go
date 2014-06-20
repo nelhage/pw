@@ -2,10 +2,10 @@ package pw
 
 import (
 	"flag"
-	"fmt"
-	"github.com/nelhage/go.cli/config"
 	"os"
 	"runtime"
+
+	"github.com/nelhage/go.cli/config"
 )
 
 type Config struct {
@@ -35,11 +35,11 @@ func init() {
 		"A command to generate new passwords")
 }
 
-func LoadConfig() *Config {
+func LoadConfig() (*Config, error) {
 	if err := config.LoadConfig(flag.CommandLine, "pw"); err != nil {
-		panic(fmt.Sprintf("Loading config: %s", err))
+		return nil, err
 	}
-	return &theConfig
+	return &theConfig, nil
 }
 
 func (config *Config) recipients() []string {

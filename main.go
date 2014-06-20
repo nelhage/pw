@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/nelhage/go.cli/completion"
-	"github.com/nelhage/pw/pw"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/nelhage/go.cli/completion"
+	"github.com/nelhage/pw/pw"
 )
 
 var config *pw.Config
@@ -74,7 +75,11 @@ func main() {
 		fmt.Printf(" Known commands: %s\n", strings.Join(knownCommands(), ", "))
 		flag.PrintDefaults()
 	}
-	config = pw.LoadConfig()
+	var err error
+	config, err = pw.LoadConfig()
+	if err != nil {
+		log.Fatalf("Loading config: %s", err)
+	}
 
 	completion.CompleteIfRequested(
 		completion.CompleterWithFlags(flag.CommandLine,

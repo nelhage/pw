@@ -2,13 +2,14 @@ package pw
 
 import (
 	"fmt"
-	"github.com/nelhage/pw/gpg"
 	"io"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/nelhage/pw/gpg"
 )
 
 type NoSuchPassword struct {
@@ -91,6 +92,15 @@ func (config *Config) ListPasswords() ([]string, error) {
 	err := filepath.Walk(config.RootDir, func(path string, info os.FileInfo, err error) error {
 		if err != nil {
 			return err
+		}
+
+		// skip hidden files
+		if filepath.Base(path)[0] == '.' {
+			// avoid recursing into hidden subdirectories
+			if info.Mode().IsDir() {
+				return filepath.SkipDir
+			}
+			return nil
 		}
 
 		if info.Mode().IsRegular() && strings.HasSuffix(path, ".gpg") {

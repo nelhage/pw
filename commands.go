@@ -1,13 +1,14 @@
 package main
 
 import (
-	"code.google.com/p/go.crypto/ssh/terminal"
 	"fmt"
-	"github.com/nelhage/pw/pw"
 	"io"
 	"io/ioutil"
 	"os"
 	"strings"
+
+	"code.google.com/p/go.crypto/ssh/terminal"
+	"github.com/nelhage/pw/pw"
 )
 
 var getCommand command = command{

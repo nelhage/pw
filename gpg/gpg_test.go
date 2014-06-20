@@ -1,9 +1,10 @@
 package gpg
 
 import (
-	. "launchpad.net/gocheck"
 	"strings"
 	"testing"
+
+	. "launchpad.net/gocheck"
 )
 
 // Hook up gocheck into the "go test" runner.
