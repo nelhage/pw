@@ -3,11 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/nelhage/go.cli/completion"
-	"github.com/nelhage/pw/pw"
 	"log"
 	"os"
 	"strings"
+
+	"github.com/nelhage/go.cli/completion"
+	"github.com/nelhage/pw/pw"
 )
 
 var config *pw.Config

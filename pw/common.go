@@ -2,13 +2,14 @@ package pw
 
 import (
 	"fmt"
-	"github.com/nelhage/pw/gpg"
 	"io"
 	"io/ioutil"
 	"os"
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/nelhage/pw/gpg"
 )
 
 type NoSuchPassword struct {

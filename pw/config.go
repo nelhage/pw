@@ -2,9 +2,10 @@ package pw
 
 import (
 	"flag"
-	"github.com/nelhage/go.cli/config"
 	"os"
 	"runtime"
+
+	"github.com/nelhage/go.cli/config"
 )
 
 type Config struct {
