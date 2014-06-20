@@ -93,6 +93,15 @@ func (config *Config) ListPasswords() ([]string, error) {
 			return err
 		}
 
+		// skip hidden files
+		if filepath.Base(path)[0] == '.' {
+			// avoid recursing into hidden subdirectories
+			if info.Mode().IsDir() {
+				return filepath.SkipDir
+			}
+			return nil
+		}
+
 		if info.Mode().IsRegular() && strings.HasSuffix(path, ".gpg") {
 			pass := strings.TrimPrefix(path, config.RootDir)
 			pass = strings.TrimPrefix(pass, "/")
