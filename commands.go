@@ -7,8 +7,8 @@ import (
 	"os"
 	"strings"
 
-	"code.google.com/p/go.crypto/ssh/terminal"
 	"github.com/nelhage/pw/pw"
+	"golang.org/x/crypto/ssh/terminal"
 )
 
 var getCommand command = command{
