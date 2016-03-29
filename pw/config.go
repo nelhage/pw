@@ -3,7 +3,9 @@ package pw
 import (
 	"flag"
 	"os"
+	"os/user"
 	"runtime"
+	"strings"
 
 	"github.com/nelhage/go.cli/config"
 )
@@ -39,7 +41,16 @@ func LoadConfig() (*Config, error) {
 	if err := config.LoadConfig(flag.CommandLine, "pw"); err != nil {
 		return nil, err
 	}
+	theConfig.RootDir = expandTilde(theConfig.RootDir)
 	return &theConfig, nil
+}
+
+func expandTilde(path string) string {
+	user, e := user.Current()
+	if e != nil {
+		return path
+	}
+	return strings.Replace(path, "~/", user.HomeDir+"/", 1)
 }
 
 func (config *Config) recipients() []string {
